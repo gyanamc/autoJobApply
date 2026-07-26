@@ -31,6 +31,19 @@ async def apply_linkedin_easy_apply(page: Page, job_id: str, dry_run: bool = Tru
         print(f"[LinkedIn Easy Apply] Easy Apply button not found.")
         print(f"[LinkedIn Easy Apply] Active Page URL: {page.url}")
         print(f"[LinkedIn Easy Apply] Active Page Title: {await page.title()}")
+        
+        # Diagnostics: Print all visible buttons
+        try:
+            buttons = await page.query_selector_all("button:visible")
+            btn_texts = []
+            for b in buttons:
+                text = (await b.inner_text()).strip().replace("\n", " ")
+                if text:
+                    btn_texts.append(text)
+            print(f"[LinkedIn Easy Apply] Visible Buttons on page: {btn_texts}")
+        except Exception as btn_err:
+            print(f"[LinkedIn Easy Apply] Failed to read buttons: {btn_err}")
+            
         try:
             screenshot_path = "linkedin_blocked_diagnostic.png"
             await page.screenshot(path=screenshot_path)
