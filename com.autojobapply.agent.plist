@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.autojobapply.agent</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/kumargyanam/Downloads/autoJobApply/venv/bin/python</string>
+        <string>/Users/kumargyanam/Downloads/autoJobApply/main.py</string>
+        <string>--run</string>
+        <string>--headed</string>
+        <string>--no-dry-run</string>
+    </array>
+    
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>8</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    
+    <key>WorkingDirectory</key>
+    <string>/Users/kumargyanam/Downloads/autoJobApply</string>
+    
+    <key>StandardOutPath</key>
+    <string>/Users/kumargyanam/Downloads/autoJobApply/scheduler_stdout.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/Users/kumargyanam/Downloads/autoJobApply/scheduler_stderr.log</string>
+    
+    <key>KeepAlive</key>
+    <false/>
+    
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

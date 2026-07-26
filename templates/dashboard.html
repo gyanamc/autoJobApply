@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Job Apply - Analytics Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --status-success: #10b981;
+            --status-skipped: #64748b;
+            --status-failed: #ef4444;
+            --font-outfit: 'Outfit', sans-serif;
+            --font-inter: 'Inter', sans-serif;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-inter);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(263,70%,20%,0.2) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.15) 0, transparent 50%);
+            background-attachment: fixed;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        h1 {
+            font-family: var(--font-outfit);
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.05em;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.total::before { background: var(--accent-purple); }
+        .stat-card.applied::before { background: var(--status-success); }
+        .stat-card.skipped::before { background: var(--status-skipped); }
+        .stat-card.failed::before { background: var(--status-failed); }
+
+        .stat-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .stat-val {
+            font-family: var(--font-outfit);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        /* Filters Layout */
+        .filter-panel {
+            background: rgba(30, 41, 59, 0.25);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        select {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.4rem 1.8rem 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        select:focus {
+            border-color: var(--accent-purple);
+        }
+
+        /* Daily Group Section */
+        .day-section {
+            margin-bottom: 3.5rem;
+        }
+
+        .day-header {
+            font-family: var(--font-outfit);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #fff;
+            border-left: 3px solid var(--accent-purple);
+            padding-left: 0.75rem;
+        }
+
+        .day-count-badge {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Jobs Grid Layout */
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .job-card {
+            background: rgba(30, 41, 59, 0.35);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px var(--glass-shadow);
+            transition: all 0.2s ease;
+        }
+
+        .job-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 30px var(--glass-shadow);
+        }
+
+        .job-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .job-main {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .job-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-company {
+            font-size: 0.9rem;
+            color: var(--accent-pink);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .job-metadata {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            align-items: center;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge.platform-linkedin { background: rgba(10, 102, 194, 0.2); color: #0a66c2; border: 1px solid rgba(10, 102, 194, 0.3); }
+        .badge.platform-naukri { background: rgba(255, 122, 0, 0.2); color: #ff7a00; border: 1px solid rgba(255, 122, 0, 0.3); }
+
+        .badge.status-applied { background: rgba(16, 185, 129, 0.15); color: var(--status-success); border: 1px solid rgba(16, 185, 129, 0.25); }
+        .badge.status-skipped { background: rgba(100, 116, 139, 0.15); color: var(--status-skipped); border: 1px solid rgba(100, 116, 139, 0.25); }
+        .badge.status-failed { background: rgba(239, 68, 68, 0.15); color: var(--status-failed); border: 1px solid rgba(239, 68, 68, 0.25); }
+
+        /* Match Reason Toggle */
+        .job-details-toggle {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--accent-purple);
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 600;
+        }
+
+        .job-details-toggle:hover {
+            color: #a78bfa;
+        }
+
+        .reason-content {
+            margin-top: 0.8rem;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-left: 2px solid var(--bg-tertiary);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .reason-content.open {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(30, 41, 59, 0.25);
+            border: 1px dashed var(--glass-border);
+            border-radius: 16px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>AutoJobApply Dashboard</h1>
+                <div class="subtitle">Real-time daily evaluation and submission portal</div>
+            </div>
+            
+            <div class="filter-panel" style="margin-bottom: 0;">
+                <form id="filter-form" method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="filter-group">
+                        <label class="filter-label" for="filter_status">Status:</label>
+                        <select name="filter_status" id="filter_status" onchange="document.getElementById('filter-form').submit()">
+                            <option value="all" {% if filters.status == 'all' %}selected{% endif %}>All Statuses</option>
+                            <option value="applied" {% if filters.status == 'applied' %}selected{% endif %}>Applied</option>
+                            <option value="skipped" {% if filters.status == 'skipped' %}selected{% endif %}>Skipped</option>
+                            <option value="failed" {% if filters.status == 'failed' %}selected{% endif %}>Failed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="filter_platform">Platform:</label>
+                        <select name="filter_platform" id="filter_platform" onchange="document.getElementById('filter-form').submit()">
+                            <option value="all" {% if filters.platform == 'all' %}selected{% endif %}>All Platforms</option>
+                            <option value="linkedin" {% if filters.platform == 'linkedin' %}selected{% endif %}>LinkedIn</option>
+                            <option value="naukri" {% if filters.platform == 'naukri' %}selected{% endif %}>Naukri</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </header>
+
+        <!-- Metrics Overview Grid -->
+        <section class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-label">Total Scraped</div>
+                <div class="stat-val">{{ stats.total }}</div>
+            </div>
+            <div class="stat-card applied">
+                <div class="stat-label">Applications Submitted</div>
+                <div class="stat-val" style="color: var(--status-success);">{{ stats.applied }}</div>
+            </div>
+            <div class="stat-card skipped">
+                <div class="stat-label">Skipped (Mismatch)</div>
+                <div class="stat-val" style="color: var(--status-skipped);">{{ stats.skipped }}</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="stat-label">Failed Applications</div>
+                <div class="stat-val" style="color: var(--status-failed);">{{ stats.failed }}</div>
+            </div>
+        </section>
+
+        <!-- Day-wise Logs Section -->
+        <main>
+            {% if not grouped_jobs %}
+            <div class="empty-state">
+                <div class="empty-icon">📁</div>
+                <h3>No Job Records Found</h3>
+                <p>No job application logs match the selected filters or have been registered in the database yet.</p>
+            </div>
+            {% else %}
+                {% for day, jobs in grouped_jobs.items() %}
+                <section class="day-section">
+                    <h2 class="day-header">
+                        {% set formatted_day = day %}
+                        {{ formatted_day }}
+                        <span class="day-count-badge">{{ jobs|length }} {% if jobs|length == 1 %}job{% else %}jobs{% endif %}</span>
+                    </h2>
+                    
+                    <div class="jobs-grid">
+                        {% for job in jobs %}
+                        <article class="job-card">
+                            <div class="job-row">
+                                <div class="job-main">
+                                    <h3 class="job-title">{{ job.title }}</h3>
+                                    <div class="job-company">{{ job.company }}</div>
+                                    <div class="job-metadata">
+                                        <span class="meta-item">
+                                            <span class="badge platform-{{ job.platform }}">{{ job.platform }}</span>
+                                        </span>
+                                        {% if job.location %}
+                                        <span class="meta-item">
+                                            <span>📍 {{ job.location }}</span>
+                                        </span>
+                                        {% endif %}
+                                        {% if job.applied_at %}
+                                        <span class="meta-item">
+                                            <span>🕒 {{ job.applied_at[11:19] }}</span>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="badge status-{{ job.status }}">{{ job.status }}</span>
+                                    {% if job.apply_url %}
+                                    <a href="{{ job.apply_url }}" target="_blank" style="margin-left: 0.5rem; text-decoration: none; color: var(--text-secondary); font-size: 0.8rem; border: 1px solid var(--glass-border); padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--bg-secondary);">Link ↗</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if job.reason %}
+                            <button class="job-details-toggle" onclick="toggleReason(this)">
+                                <span>Show AI Assessment & Info</span> ▼
+                            </button>
+                            <div class="reason-content">
+                                <strong>Assessment Detail / Log:</strong><br>
+                                {{ job.reason }}
+                            </div>
+                            {% endif %}
+                        </article>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endfor %}
+            {% endif %}
+        </main>
+    </div>
+
+    <script>
+        function toggleReason(button) {
+            const content = button.nextElementSibling;
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                button.querySelector('span').innerHTML = 'Show AI Assessment & Info ▼';
+            } else {
+                content.classList.add('open');
+                button.querySelector('span').innerHTML = 'Hide AI Assessment & Info ▲';
+            }
+        }
+    </script>
+</body>
+</html>
