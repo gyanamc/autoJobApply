@@ -328,6 +328,35 @@
             margin-bottom: 1rem;
         }
 
+        .btn-trigger {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-pink) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-family: var(--font-outfit);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-trigger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-trigger:disabled {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         /* Responsive styling */
         @media (max-width: 600px) {
             header {
@@ -344,6 +373,9 @@
             <div>
                 <h1>AutoJobApply Dashboard</h1>
                 <div class="subtitle">Real-time daily evaluation and submission portal</div>
+                <div style="margin-top: 0.8rem;">
+                    <button onclick="triggerAgentRun()" class="btn-trigger">Run Agent Now ⚡</button>
+                </div>
             </div>
             
             <div class="filter-panel" style="margin-bottom: 0;">
@@ -465,6 +497,29 @@
                 content.classList.add('open');
                 button.querySelector('span').innerHTML = 'Hide AI Assessment & Info ▲';
             }
+        }
+
+        function triggerAgentRun() {
+            if (!confirm("Are you sure you want to trigger the job application agent now?")) return;
+            
+            const btn = document.querySelector('.btn-trigger');
+            btn.disabled = true;
+            btn.innerText = "Running... ⚙️";
+            
+            fetch('/api/v1/run', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || "Run started successfully!");
+                    // Poll for status or just refresh page after a short period
+                    setTimeout(() => {
+                        location.reload();
+                    }, 4000);
+                })
+                .catch(err => {
+                    alert("Error starting agent: " + err);
+                    btn.disabled = false;
+                    btn.innerText = "Run Agent Now ⚡";
+                });
         }
     </script>
 </body>

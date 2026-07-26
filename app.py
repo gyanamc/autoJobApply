@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, date
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import uvicorn
@@ -30,6 +30,12 @@ async def start_scheduler():
     )
     scheduler.start()
     print("[Railway Scheduler] Registered daily 8:00 AM IST agent workflow run.")
+
+@app.post("/api/v1/run")
+async def trigger_agent_run(background_tasks: BackgroundTasks):
+    """Triggers the job agent workflow immediately in the background on Railway."""
+    background_tasks.add_task(run_agent_workflow, dry_run=False, headed=False)
+    return {"status": "success", "message": "Job application agent run has been started in the background."}
 
 @app.get("/", response_class=HTMLResponse)
 async def get_dashboard(request: Request, filter_status: str = "all", filter_platform: str = "all"):
