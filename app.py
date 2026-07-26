@@ -83,9 +83,9 @@ async def get_dashboard(request: Request, filter_status: str = "all", filter_pla
     grouped_jobs = {day: jobs_by_day[day] for day in sorted_days}
     
     return templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
+        request=request,
+        name="dashboard.html",
+        context={
             "grouped_jobs": grouped_jobs,
             "stats": {
                 "total": len(rows),
