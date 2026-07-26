@@ -27,7 +27,17 @@ async def apply_linkedin_easy_apply(page: Page, job_id: str, dry_run: bool = Tru
         if applied_indicator:
             print("[LinkedIn Easy Apply] Already applied to this job.")
             return True
-        print("[LinkedIn Easy Apply] Easy Apply button not found. Maybe already applied or expired.")
+            
+        print(f"[LinkedIn Easy Apply] Easy Apply button not found.")
+        print(f"[LinkedIn Easy Apply] Active Page URL: {page.url}")
+        print(f"[LinkedIn Easy Apply] Active Page Title: {await page.title()}")
+        try:
+            screenshot_path = "linkedin_blocked_diagnostic.png"
+            await page.screenshot(path=screenshot_path)
+            print(f"[LinkedIn Easy Apply] Diagnostic screenshot saved to: {screenshot_path}")
+        except Exception as ss_err:
+            print(f"[LinkedIn Easy Apply] Failed to take diagnostic screenshot: {ss_err}")
+            
         return False
         
     await browser_manager.click_with_delay(easy_apply_btn)

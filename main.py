@@ -115,11 +115,11 @@ async def run_agent_workflow(dry_run: bool = True, headed: bool = False):
     try:
         conn = db.get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(db._qp("""
             SELECT title, company, platform, status, reason, apply_url, applied_at, scraped_at, apply_type 
             FROM jobs
             WHERE scraped_at >= ? OR applied_at >= ?
-        """, (run_start_time, run_start_time))
+        """), (run_start_time, run_start_time))
         rows = cursor.fetchall()
         conn.close()
     except Exception as db_err:
