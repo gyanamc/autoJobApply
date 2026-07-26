@@ -4,7 +4,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import uvicorn
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import db
+from main import run_agent_workflow
 
 app = FastAPI(
     title="Auto Job Apply Dashboard",
@@ -13,6 +15,21 @@ app = FastAPI(
 
 # Setup templates directory
 templates = Jinja2Templates(directory="templates")
+
+@app.on_event("startup")
+async def start_scheduler():
+    scheduler = AsyncIOScheduler()
+    # Runs the job agent daily at 8:00 AM (Indian Standard Time)
+    scheduler.add_job(
+        run_agent_workflow,
+        "cron",
+        hour=8,
+        minute=0,
+        timezone="Asia/Kolkata",
+        kwargs={"dry_run": False, "headed": False} # Run headlessly and actually apply!
+    )
+    scheduler.start()
+    print("[Railway Scheduler] Registered daily 8:00 AM IST agent workflow run.")
 
 @app.get("/", response_class=HTMLResponse)
 async def get_dashboard(request: Request, filter_status: str = "all", filter_platform: str = "all"):

@@ -13,10 +13,9 @@ class BrowserManager:
 
     async def get_browser_context(self, playwright, headed: bool = False) -> BrowserContext:
         """
-        Launches or attaches to a persistent Chromium context.
-        This persists cookies, sessions, and local storage.
+        Launches or attaches to a Chromium context.
+        Uses persistent directory locally, or falls back to storage state JSON (state.json) on cloud environments.
         """
-        # Set realistic user agent and browser arguments to avoid detection
         args = [
             "--disable-blink-features=AutomationControlled",
             "--no-sandbox",
@@ -26,14 +25,26 @@ class BrowserManager:
             "--ignore-certificate-errors",
         ]
         
-        context = await playwright.chromium.launch_persistent_context(
-            user_data_dir=self.user_data_dir,
-            headless=not headed,
-            args=args,
-            viewport={"width": 1280, "height": 800},
-            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            bypass_csp=True,
-        )
+        state_file = Path(__file__).resolve().parent / "state.json"
+        
+        if not headed and state_file.exists():
+            print(f"[Browser Manager] Loading authenticated storage state from: {state_file}")
+            browser = await playwright.chromium.launch(headless=True, args=args)
+            context = await browser.new_context(
+                storage_state=str(state_file),
+                viewport={"width": 1280, "height": 800},
+                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                bypass_csp=True
+            )
+        else:
+            context = await playwright.chromium.launch_persistent_context(
+                user_data_dir=self.user_data_dir,
+                headless=not headed,
+                args=args,
+                viewport={"width": 1280, "height": 800},
+                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                bypass_csp=True,
+            )
         
         # Add stealth script to page
         await context.add_init_script(

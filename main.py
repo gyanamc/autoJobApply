@@ -44,6 +44,11 @@ async def run_login_session():
         # Run input in a thread since standard input blocks async loops
         await asyncio.get_event_loop().run_in_executor(None, input, "Press ENTER when finished...")
         
+        # Save storage state to state.json
+        state_path = Path(__file__).resolve().parent / "state.json"
+        await context.storage_state(path=str(state_path))
+        print(f"\n[Session] Storage state (cookies + local storage) successfully saved to: {state_path}")
+        
         # Close pages and context to write cookies to disk
         await page1.close()
         await page2.close()
