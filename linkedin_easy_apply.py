@@ -5,32 +5,48 @@ from playwright.async_api import Page, ElementHandle
 from browser_manager import browser_manager
 from form_filler_agent import form_filler_agent
 from config import config
+from external_form_filler import apply_external_ats
 
 async def apply_linkedin_easy_apply(page: Page, job_id: str, dry_run: bool = True) -> bool:
     """
-    Automates the LinkedIn Easy Apply modal flow.
-    If dry_run is True, it will fill out all forms but stop before clicking 'Submit application'.
+    Unified LinkedIn application handler.
+    Dynamically detects the application type on the job details page
+    ('Easy Apply', 'I’m interested', or 'Apply' external redirect) and executes it.
     """
-    print(f"[LinkedIn Easy Apply] Starting application for Job {job_id}...")
+    print(f"[LinkedIn Apply] Starting application checks for Job {job_id}...")
     
-    # 1. Click "Easy Apply" button
+    # 1. Wait for page elements to load
     try:
-        # Wait for the apply button container to load and become visible
-        await page.wait_for_selector("button.jobs-apply-button", timeout=8000)
+        await page.wait_for_selector("button.jobs-apply-button, .jobs-s-apply button, button:has-text('Apply')", timeout=8000)
     except Exception:
         pass
         
-    easy_apply_btn = await page.query_selector("button:has-text('Easy Apply'), button.jobs-apply-button:has-text('Easy Apply')")
-    if not easy_apply_btn:
-        # Check if already applied
-        applied_indicator = await page.query_selector("button:has-text('Applied'), .artdeco-button--disabled:has-text('Applied'), :has-text('Applied on')")
-        if applied_indicator:
-            print("[LinkedIn Easy Apply] Already applied to this job.")
-            return True
+    # Check if already applied
+    applied_indicator = await page.query_selector("button:has-text('Applied'), .artdeco-button--disabled:has-text('Applied'), :has-text('Applied on')")
+    if applied_indicator:
+        print("[LinkedIn Apply] Already applied to this job.")
+        return True
+
+    # 2. Find primary application button
+    apply_btn = None
+    selectors = [
+        "button.jobs-apply-button",
+        ".jobs-s-apply button",
+        "button:has-text('Easy Apply')",
+        "button:has-text('I’m interested')",
+        "button:has-text('Apply')",
+        "button:has-text('Apply now')"
+    ]
+    for s in selectors:
+        el = await page.query_selector(s)
+        if el and await el.is_visible():
+            apply_btn = el
+            break
             
-        print(f"[LinkedIn Easy Apply] Easy Apply button not found.")
-        print(f"[LinkedIn Easy Apply] Active Page URL: {page.url}")
-        print(f"[LinkedIn Easy Apply] Active Page Title: {await page.title()}")
+    if not apply_btn:
+        print("[LinkedIn Apply] Primary application button not found.")
+        print(f"[LinkedIn Apply] Active Page URL: {page.url}")
+        print(f"[LinkedIn Apply] Active Page Title: {await page.title()}")
         
         # Diagnostics: Print all visible buttons
         try:
@@ -40,19 +56,60 @@ async def apply_linkedin_easy_apply(page: Page, job_id: str, dry_run: bool = Tru
                 text = (await b.inner_text()).strip().replace("\n", " ")
                 if text:
                     btn_texts.append(text)
-            print(f"[LinkedIn Easy Apply] Visible Buttons on page: {btn_texts}")
+            print(f"[LinkedIn Apply] Visible Buttons on page: {btn_texts}")
         except Exception as btn_err:
-            print(f"[LinkedIn Easy Apply] Failed to read buttons: {btn_err}")
+            print(f"[LinkedIn Apply] Failed to read buttons: {btn_err}")
             
         try:
             screenshot_path = "linkedin_blocked_diagnostic.png"
             await page.screenshot(path=screenshot_path)
-            print(f"[LinkedIn Easy Apply] Diagnostic screenshot saved to: {screenshot_path}")
+            print(f"[LinkedIn Apply] Diagnostic screenshot saved to: {screenshot_path}")
         except Exception as ss_err:
-            print(f"[LinkedIn Easy Apply] Failed to take diagnostic screenshot: {ss_err}")
+            print(f"[LinkedIn Apply] Failed to take diagnostic screenshot: {ss_err}")
             
         return False
         
+    btn_text = (await apply_btn.inner_text()).strip()
+    print(f"[LinkedIn Apply] Found application button with text: '{btn_text}'")
+    
+    # 3. Route based on button text
+    if "easy apply" in btn_text.lower() or "apply now" in btn_text.lower():
+        print("[LinkedIn Apply] Executing Easy Apply flow...")
+        return await _execute_easy_apply_flow(page, apply_btn, dry_run)
+        
+    elif "interested" in btn_text.lower():
+        if dry_run:
+            print("[LinkedIn Apply] Dry Run: 'I’m interested' button found. Stopping before click.")
+            return True
+        else:
+            print("[LinkedIn Apply] Clicking 'I’m interested' to submit profile...")
+            await browser_manager.click_with_delay(apply_btn)
+            await browser_manager.human_delay(3.0, 5.0)
+            return True
+            
+    elif "apply" in btn_text.lower():
+        print("[LinkedIn Apply] External apply redirect button found. Clicking to launch external ATS...")
+        context = page.context
+        try:
+            async with context.expect_page(timeout=15000) as new_page_info:
+                await apply_btn.click()
+            external_page = await new_page_info.value
+            await external_page.wait_for_load_state()
+            print(f"[LinkedIn Apply] Redirected to external page: {external_page.url}")
+            
+            # Fill the external form
+            success = await apply_external_ats(external_page, external_page.url, dry_run=dry_run)
+            await external_page.close()
+            return success
+        except Exception as e:
+            print(f"[LinkedIn Apply] Error handling external redirect: {e}")
+            return False
+            
+    print(f"[LinkedIn Apply] Unknown button text action: '{btn_text}'. Cannot apply.")
+    return False
+
+async def _execute_easy_apply_flow(page: Page, easy_apply_btn: ElementHandle, dry_run: bool = True) -> bool:
+    """Automates the LinkedIn Easy Apply modal wizard."""
     await browser_manager.click_with_delay(easy_apply_btn)
     
     # Wait for modal to appear
