@@ -16,7 +16,7 @@ class Config:
     GROQ_MODEL = "llama-3.1-70b-versatile"
     
     # Search Configurations
-    SEARCH_KEYWORDS = [k.strip() for k in os.getenv("SEARCH_KEYWORDS", "Chief AI Architect, Generative AI").split(",")]
+    SEARCH_KEYWORDS = [k.strip() for k in os.getenv("SEARCH_KEYWORDS", "Chief AI Architect, Generative AI, artificial intelligence, agentic AI head, langchain, langgraph, RAG, large language model, AI strategy").split(",")]
     SEARCH_LOCATIONS = [l.strip() for l in os.getenv("SEARCH_LOCATIONS", "Gurgaon, Noida, Remote").split(",")]
     
     # Browser persistent profile
