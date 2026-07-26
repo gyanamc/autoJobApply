@@ -1,0 +1,84 @@
+KUMAR GYANAM
+Chief AI Architect · AI Strategy Leader · Enterprise AI Transformation
+Gurgaon, India | +91 9953682525 | gyanamc@gmail.com | linkedin.com/in/kumar-gyanam | github.com/gyanamc
+
+EXECUTIVE SUMMARY
+AI leader who built India's first sovereign, air-gapped Agentic RAG platform — now serving 22 million users at 99.9% uptime with zero third-party data exposure. Twenty years of shipping production AI across fintech, healthcare, and media, with ₹20 Cr+ AI budget ownership spanning GPU procurement, vendor contracts, and team operations. Trusted board-level advisor and Guest Faculty at IIM Indore and ISB for Executive MBA programmes on AI strategy and governance.
+
+KEY METRICS
+- 22M+ Users on Sovereign AI
+- ₹20Cr+ AI Budget Ownership
+- 99.9% Production SLA Uptime
+- 400% AI Bill Pay Growth
+- 75+ FTE Saved via AI
+- 30+ Production AI Shipped
+
+CORE COMPETENCIES
+- Agentic AI: LangGraph, LangChain, n8n, Multi-Agent Orchestration, Agentic RAG
+- LLM Serving: vLLM (PagedAttention), Ray Serve, GPT-OSS 20B, Mistral 7B, Gemma 7B
+- Fine-Tuning: LoRA, PEFT, Domain-Adaptive Training, Open Source Model Adaptation
+- Vector Search: all-MiniLM-L6-v2, Elasticsearch kNN, Semantic Retrieval, RAG Pipelines
+- AI Safety: Guardrails.ai, PII Detection, Toxicity Screening, Prompt Injection Prevention
+- MLOps: MLflow, Ragas (RAG Eval), Airflow, Prometheus, Grafana, Continuous Eval
+- Infrastructure: On-Premise GPU (NVIDIA A40), DXC, Docker, Kubernetes, AWS, Firebase
+- Automation: FastAPI, n8n (30+ workflows), Python, REST, Enterprise Workflow Design
+
+PROFESSIONAL EXPERIENCE
+
+SBI Card — Gurgaon, India | April 2023 – Present
+Deputy Vice President — Generative & Agentic AI
+- Owns the Generative & Agentic AI function: 15+ cross-functional team (engineers, data scientists, vendor partners). ₹20 Cr+ AI budget accountability spanning GPU procurement, vendor evaluation (NVIDIA, DXC Technology), and board-level AI roadmap.
+- Sovereign On-Premise Agentic RAG Platform:
+  - Built India's first air-gapped RAG ecosystem for fintech — ensuring 100% data sovereignty and financial-grade security with zero third-party data exposure.
+  - Scaled to 22M+ users and 21M+ monthly transactions at 99.9% uptime SLA. Integrated 45+ enterprise components including LangGraph/LangChain for stateful multi-agent orchestration, vLLM for high-throughput inference, and Ray Serve on NVIDIA A40 GPUs.
+  - Intelligent model routing: Deployed GPT-OSS 20B, Mistral 7B, and Gemma 7B with automated routing — Mistral for <500-token tasks, GPT-OSS for 24k-token long-context workloads, Gemma for structured reasoning.
+  - LoRA-based fine-tuning (PEFT) on open-source models, enabling domain-adaptive learning on proprietary data without external infrastructure exposure.
+  - Guardrails.ai pre/post pipeline — PII detection, toxicity screening, prompt injection prevention, and hallucination validation across all model interactions.
+  - Continuous evaluation loop using Ragas and MLflow: faithfulness score of 0.90, relevancy score of 0.94 across 22M+ interactions.
+  - Course correction: Early deployments showed unacceptable hallucination rates on long-context queries. Led a 6-week model re-evaluation cycle, replacing initial selection with GPT-OSS 20B — improving faithfulness from 0.74 to 0.90.
+- Strategic Business Applications:
+  - SBICard.com search revamp: Replaced keyword lookup with AI-powered semantic search, improving product discoverability and customer self-service rates.
+  - RAG-powered offers engine: Personalised card offers based on spending patterns, driving 400% growth in AI-driven bill payments.
+  - AI co-pilot for customer care: Real-time, policy-compliant response generation during live interactions — 75+ FTE cost savings and reduced Average Handle Time.
+  - Internal GPT for developers: Secure, air-gapped portal for engineering teams to query internal codebases and API documentation.
+  - Board-level AI roadmap: Authored the enterprise-wide AI transformation strategy. Led multi-million dollar vendor evaluation across DXC, NVIDIA, and specialist AI partners.
+
+Brane Group — Global | Jan 2022 – Apr 2023
+Analytics Delivery Head
+- Led a 45-member cross-functional analytics and engineering team delivering production AI/ML systems across 6–8 concurrent client engagements in healthcare, fintech, and ad-tech.
+- Solutions architecture: Designed ML-powered systems including ambulance dispatch optimisation (healthcare), fraud detection (fintech), and campaign ROI optimisation (ad-tech) across parallel delivery streams.
+- End-to-end delivery ownership: Managed full project lifecycle — client discovery, solution architecture, model deployment, and client handover — across 6–8 simultaneous engagements.
+- Engineering standards: Established delivery standards and engineering practices for the analytics function, reducing project cycle time and improving cross-team consistency.
+
+Pixstory — Gurgaon, India | Jan 2019 – Jan 2022
+Head of Technology Architecture
+- Led technology architecture and product engineering for a social media platform. Managed 8–10 person engineering team across ML, backend, and product functions.
+- Recommendation engine: Built a custom ML-based recommendation engine from scratch — 180% improvement in user engagement through personalised content delivery.
+- NLP at scale: Architected semantic analysis and automated tagging workflows processing 1M+ posts, reducing manual content operations.
+- Growth support: Led technical product strategy and go-to-market execution supporting 100K+ user acquisition from architecture through launch.
+
+The Indian Express — Noida, India | Jul 2009 – Jan 2019
+Chief Manager — Business Intelligence
+- Owned data analytics, business intelligence, and audience insights for one of India's largest news organisations.
+- Predictive analytics: Built predictive models for subscription churn forecasting and collection management, transforming the digital subscription architecture.
+- NLP-driven insights: Applied text mining to unstructured consumer feedback — reduced user detractors by 50%, directly informing product and editorial decisions.
+
+Axis Bank | Sales Manager | Aug 2008 – Jul 2009
+ICICI Bank | Sales Manager | Jun 2006 – Aug 2008
+
+PRODUCTS SHIPPED
+- Agentic AI Resume — Interactive AI portfolio with JD match analysis and live architecture diagrams. (agentic-ai-resume-production.up.railway.app)
+- AI Job Assistant — Chrome Extension for real-time job analysis, CV tailoring, and application assistance. Live on Chrome Web Store.
+- Live AI Portfolio — 30+ production AI systems across Agentic RAG, LLM fine-tuning, and enterprise GenAI. (ai-showcase-site-production.up.railway.app)
+- Open-Source & Public Code — Repositories across Agentic AI, RAG systems, and automation workflows. (github.com/gyanamc)
+
+THOUGHT LEADERSHIP & SPEAKING
+- Guest Faculty, ISB (Indian School of Business) — Teaches Generative AI for Business and Responsible AI as part of the Executive MBA curriculum.
+- Guest Faculty, IIM Indore — Lectures on AI Strategy, Technology Leadership, and AI Governance for Executive MBA programmes.
+- LinkedIn Thought Leader — Regular author on sovereign AI architecture, LLM fine-tuning trade-offs, RAG evaluation frameworks, and multi-agent orchestration for enterprise audiences. (linkedin.com/in/kumar-gyanam)
+
+EDUCATION
+- Advanced Diploma in Programming · IIT Madras (Competitive Admit, Top 1.7% of 60,000+ applicants)
+- Certificate in AI-Powered Marketing · IIM Calcutta (2021 – 2022)
+- MBA — Marketing & Strategic Management · IRM (2004 – 2006)
+- B.Sc. — Mathematics & Statistics · Ranchi University (2001 – 2004)

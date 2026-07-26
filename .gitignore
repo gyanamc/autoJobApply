@@ -1,0 +1,34 @@
+# Virtual environment
+venv/
+.venv/
+ENV/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local database
+*.db
+*.db-journal
+jobs.db
+
+# Secrets & Environment configs
+.env
+.env.*
+
+# Playwright Browser Session
+browser_session/
+.playwright/
+
+# Log files and screenshots
+*.log
+*.png
+*.jpg
+*.jpeg
+
+# IDE settings
+.vscode/
+.idea/
+.DS_Store
