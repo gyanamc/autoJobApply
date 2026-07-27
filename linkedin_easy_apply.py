@@ -17,9 +17,16 @@ async def apply_linkedin_easy_apply(page: Page, job_id: str, dry_run: bool = Tru
     
     # 1. Wait for page elements to load
     try:
-        await page.wait_for_selector("button.jobs-apply-button, .jobs-s-apply button, button:has-text('Apply')", timeout=8000)
-    except Exception:
-        pass
+        # Wait for the main job detail container or title to appear first
+        await page.wait_for_selector(".job-details-jobs-unified-top-card__job-title, h1, .jobs-description-content", timeout=15000)
+    except Exception as e:
+        print(f"[LinkedIn Apply] Warning: Job details container did not load within 15s: {e}")
+        
+    try:
+        # Wait for any of the apply buttons to appear
+        await page.wait_for_selector("button.jobs-apply-button, .jobs-s-apply button, button:has-text('Apply'), button:has-text('I’m interested'), button:has-text('Apply now')", timeout=10000)
+    except Exception as e:
+        print(f"[LinkedIn Apply] Warning: Timeout waiting for apply buttons to appear: {e}")
         
     # Check if already applied
     applied_indicator = await page.query_selector("button:has-text('Applied'), .artdeco-button--disabled:has-text('Applied'), :has-text('Applied on')")
