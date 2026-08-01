@@ -168,13 +168,32 @@ async def _execute_easy_apply_flow(page: Page, easy_apply_btn: ElementHandle, dr
             else:
                 print("[LinkedIn Easy Apply] Clicking Submit application!")
                 await browser_manager.click_with_delay(submit_btn)
-                await browser_manager.human_delay(3.0, 5.0)
+                await browser_manager.human_delay(4.0, 6.0)
+                
+                # Verify that the submission actually went through and didn't fail validation
+                modal_check = await page.query_selector(".jobs-easy-apply-modal")
+                if modal_check:
+                    # Check for validation errors
+                    errors = await modal_check.query_selector_all(".artdeco-inline-feedback--error, [role='alert']")
+                    if errors and len(errors) > 0:
+                        print(f"[LinkedIn Easy Apply] ❌ Submission failed! Found {len(errors)} validation errors on the submit page.")
+                        # Dismiss the modal so we don't leave it hanging open
+                        close_btn = await modal_check.query_selector("button[aria-label='Dismiss']")
+                        if close_btn:
+                            await close_btn.click()
+                            discard_btn = await page.query_selector("button:has-text('Discard')")
+                            if discard_btn:
+                                await discard_btn.click()
+                        return False
                 
                 # Check for post-apply screen or confirmation
                 # Click Done if it exists
                 done_btn = await page.query_selector("button:has-text('Done')")
                 if done_btn:
                     await done_btn.click()
+                    print("[LinkedIn Easy Apply] Native Done button clicked. Application verified!")
+                    
+                print("[LinkedIn Easy Apply] Application submission verified successfully!")
                 return True
                 
         elif review_btn:
@@ -203,8 +222,8 @@ async def _execute_easy_apply_flow(page: Page, easy_apply_btn: ElementHandle, dr
 async def _fill_form_fields(page: Page, modal: ElementHandle):
     """Identifies and fills form fields in the modal."""
     
-    # 1. Handle Text and TextArea Fields
-    text_fields = await modal.query_selector_all("input[type='text'], textarea")
+    # 1. Handle Text, Number, Telephone, Email, and Untyped Input Fields
+    text_fields = await modal.query_selector_all("input[type='text'], input[type='number'], input[type='tel'], input[type='email'], input:not([type]), textarea")
     for field in text_fields:
         # Check if already filled
         val = await field.input_value()
@@ -216,8 +235,10 @@ async def _fill_form_fields(page: Page, modal: ElementHandle):
         if not label_text:
             continue
             
-        print(f"[LinkedIn Easy Apply] Answering text question: '{label_text}'")
-        answer = await form_filler_agent.answer_form_question(label_text, field_type="text")
+        # Determine the field type from the input attributes
+        inp_type = await field.get_attribute("type") or "text"
+        print(f"[LinkedIn Easy Apply] Answering {inp_type} question: '{label_text}'")
+        answer = await form_filler_agent.answer_form_question(label_text, field_type=inp_type)
         await field.focus()
         await browser_manager.human_type(field, answer)
 
@@ -314,6 +335,19 @@ async def _fill_form_fields(page: Page, modal: ElementHandle):
                 await browser_manager.human_delay(2.0, 4.0)
             else:
                 print(f"[LinkedIn Easy Apply] Warning: Resume file not found at {pdf_path.resolve()}. Skipping upload.")
+
+    # 5. Handle Checkboxes (check required checkboxes)
+    checkboxes = await modal.query_selector_all("input[type='checkbox']")
+    for cb in checkboxes:
+        if await cb.is_checked():
+            continue
+        label_text = await _get_associated_label_text(page, cb)
+        print(f"[LinkedIn Easy Apply] Checking required checkbox: '{label_text}'")
+        try:
+            await cb.click()
+            await browser_manager.human_delay(0.5, 1.0)
+        except Exception as cb_err:
+            print(f"[LinkedIn Easy Apply] Failed to check checkbox: {cb_err}")
 
 async def _get_associated_label_text(page: Page, element: ElementHandle) -> str:
     """Helper to find the text label associated with a form element."""
