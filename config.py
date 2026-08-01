@@ -29,6 +29,8 @@ class Config:
     
     # Resume Paths
     RESUME_PDF_PATH = BASE_DIR / "resume.pdf"
+    if not RESUME_PDF_PATH.exists() and (BASE_DIR / "Resume.pdf").exists():
+        RESUME_PDF_PATH = BASE_DIR / "Resume.pdf"
     RESUME_TXT_PATH = BASE_DIR / "resume_data.txt"
 
 config = Config()
