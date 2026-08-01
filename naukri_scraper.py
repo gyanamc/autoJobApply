@@ -32,6 +32,8 @@ async def scrape_naukri_jobs(context: BrowserContext, keyword: str, location: st
         await page.wait_for_selector(".srp-jobtuple-wrapper", timeout=15000)
     except Exception:
         print("[Naukri Scraper] Job wrappers not found. Maybe no results or different layout.")
+        print(f"[Naukri Scraper] Active Page URL: {page.url}")
+        print(f"[Naukri Scraper] Active Page Title: {await page.title()}")
         await page.close()
         return
 
